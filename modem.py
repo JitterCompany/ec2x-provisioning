@@ -21,12 +21,21 @@ class Modem:
                 return result
             result.append(line.strip())
 
+    def _send_bytes(self, data: bytes):
+        self._port.write(data)
+        return self._read_lines()
 
     def _send_AT(self, cmd):
         """ Send AT command, returns all resonse lines"""
         self._port.write(bytes(cmd + "\r\n", 'utf-8'))
         return self._read_lines()
 
+    def _validate_connect(self, response):
+        if not response[-1] == "CONNECT":
+            print("WARN: modem response '{}' not expected".format(response[-1]))
+            return False
+
+        return True
 
     def _validate_response(self, response, expected_n_lines, max_n_lines=-1):
         if not len(response)  == expected_n_lines:
@@ -181,6 +190,35 @@ class Modem:
         else:
             print("WARN: get_ecm_mode_roaming not implemented for model '{}'".format(self.model))
             return False
+
+    def find_file(self, file: str):
+        at_response = self._send_AT(f"AT+QFLST=\"{file}\"\r\n")
+        print("find file resp: ", at_response)
+        if self._validate_response(at_response, 4):
+            return at_response
+        else:
+            print("No files")
+
+    def delete_file(self, filename):
+        at_response = self._send_AT(f"AT+QFDEL=\"{filename}\"\r\n")
+        if self._validate_response(at_response, 2):
+            print("delete OK")
+
+    def upload_file(self, filename, contents: bytes):
+
+        size = len(contents)
+        print(f"Uploading {filename} with size {size} and content: {contents}")
+        at_response = self._send_AT(f"AT+QFUPL=\"{filename}\",{size}\r\n")
+
+        if self._validate_connect(at_response):
+            response = self._send_bytes(contents)
+            print("upload bytes response: ", response)
+            if self._validate_response(response, 3):
+                print("upload OK")
+            else:
+                print("upload failed")
+
+
 
     def read_config(self):
         try:

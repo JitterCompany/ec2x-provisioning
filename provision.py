@@ -154,6 +154,21 @@ def check_update_baudrate(modem: Modem, baudrate, dry_run=True):
     else:
         print("Baudrate already correct")
 
+def upload_certificate(certificate: pathlib.Path):
+    with open(certificate, 'rb') as f:
+        contents = f.read()
+        modem.delete_file("client.crt")
+        modem.upload_file("client.crt", contents)
+
+    modem.find_file("client.crt")
+
+def upload_key(key: pathlib.Path):
+    with open(key, 'rb') as f:
+        contents = f.read()
+        modem.delete_file("client.key")
+        modem.upload_file("client.key", contents)
+
+    modem.find_file("client.key")
 
 if __name__ == "__main__":
 
@@ -165,6 +180,8 @@ if __name__ == "__main__":
     parser.add_argument('--apply', action='store_true', help='Actually apply changes. Without this option this script runs in dry-run mode.')
     parser.add_argument('--baudrate', action='store_true', help='Apply new baudrate')
     parser.add_argument('--update', action='store_true', help='Apply firmware update config and updates')
+    parser.add_argument('--cert', type=pathlib.Path, help='Path to the certificate')
+    parser.add_argument('--key', type=pathlib.Path, help='Path to the key')
     parser.add_argument('port', type=pathlib.Path, help="serial port for the AT commands")
 
     args = parser.parse_args()
@@ -175,6 +192,9 @@ if __name__ == "__main__":
 
     if modem:
         target_config = TARGET_CONFIG[modem.model]
+
+        modem.delete_file("test")
+        modem.upload_file("test", bytes("Test File", 'utf-8'))
 
         if args.update:
             print("Updating firmware if required...")
@@ -192,6 +212,13 @@ if __name__ == "__main__":
                 else:
                     print(f"Updating baudrate: this will only work if connected to actual uart")
                     print(f"Setting baudrate failed. You can also do this manually with: 'AT+IPR={baudrate};&W' ")
+
+        if args.cert:
+            upload_certificate(args.cert)
+
+        if args.key:
+            upload_key(args.key)
+
 
         modem.close_serial()
 
