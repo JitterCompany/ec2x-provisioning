@@ -12,13 +12,13 @@ Run
 
 ```bash
 
-./provision --help
+./provision.py --help
 
 # for firmware update
-./provision --update --apply /dev/ttyUSB3
+./provision.py --update --apply /dev/ttyUSB3
 
 # For baudrate update via usb-serial converter
-./provision --baudrate --apply /dev/ttySOMEUSBCONVERTER
+./provision.py --baudrate --apply /dev/ttySOMEUSBCONVERTER
 ```
 
 Run without `--apply` to do a dry-run.
@@ -27,6 +27,6 @@ Upload key and certificate:
 
 ```bash
 
-./provision --key ./fwdev1.key --cert ./fw1dev1.crt
+./provision.py --key ./fwdev1.key --cert ./fwdev1.crt /dev/ttyUSB3
 
 ```
