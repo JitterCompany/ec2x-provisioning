@@ -26,7 +26,5 @@ Run without `--apply` to do a dry-run.
 Upload key and certificate:
 
 ```bash
-
-./provision.py --key ./fwdev1.key --cert ./fwdev1.crt /dev/ttyUSB3
-
+./provision.py --key ./fwdev1.key --cert ./fwdev1.crt --ca ./sensor_CA.pem /dev/ttyUSB3
 ```

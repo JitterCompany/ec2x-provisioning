@@ -172,6 +172,15 @@ def upload_key(key: pathlib.Path):
 
     modem.find_file("client.key")
 
+def upload_ca(ca: pathlib.Path):
+    with open(ca, 'rb') as f:
+        print("Upload ca", ca)
+        contents = f.read()
+        modem.delete_file("cacert.pem")
+        modem.upload_file("cacert.pem", contents)
+
+    modem.find_file("cacert.pem")
+
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
@@ -184,6 +193,7 @@ if __name__ == "__main__":
     parser.add_argument('--update', action='store_true', help='Apply firmware update config and updates')
     parser.add_argument('--cert', type=pathlib.Path, help='Path to the certificate')
     parser.add_argument('--key', type=pathlib.Path, help='Path to the key')
+    parser.add_argument('--ca', type=pathlib.Path, help='Path to the CA cert')
     parser.add_argument('port', type=pathlib.Path, help="serial port for the AT commands")
 
     args = parser.parse_args()
@@ -194,9 +204,6 @@ if __name__ == "__main__":
 
     if modem:
         target_config = TARGET_CONFIG[modem.model]
-
-        modem.delete_file("test")
-        modem.upload_file("test", bytes("Test File", 'utf-8'))
 
         if args.update:
             print("Updating firmware if required...")
@@ -220,6 +227,9 @@ if __name__ == "__main__":
 
         if args.key:
             upload_key(args.key)
+
+        if args.ca:
+            upload_ca(args.ca)
 
 
         modem.close_serial()
