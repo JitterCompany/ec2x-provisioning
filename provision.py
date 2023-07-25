@@ -15,14 +15,14 @@ FIRMWARE_UPDATE_FOLDER = '/home/odroid/frogwatch/QFirehose_Linux_Android_V1.4.9/
 
 TARGET_CONFIG = {
     'EC25': {
-        'baudrate': '115200',
+        'baudrate': '230400',
         'firmware': 'EC25EFAR06A17M4G_20.200.20.200',
         'usb_mode': 'none',
         'apn': 'portalmmm.nl',
         'ecm_mode_roaming': True
     },
     'EC21': {
-        'baudrate': '4000000',
+        'baudrate': '230400',
         'firmware': 'EC21EFAR06A08M4G_20.200.20.200',
         'usb_mode': 'none',
         'apn': 'portalmmm.nl',
@@ -156,6 +156,7 @@ def check_update_baudrate(modem: Modem, baudrate, dry_run=True):
 
 def upload_certificate(certificate: pathlib.Path):
     with open(certificate, 'rb') as f:
+        print("Upload cert", certificate)
         contents = f.read()
         modem.delete_file("client.crt")
         modem.upload_file("client.crt", contents)
@@ -164,6 +165,7 @@ def upload_certificate(certificate: pathlib.Path):
 
 def upload_key(key: pathlib.Path):
     with open(key, 'rb') as f:
+        print("Upload key", key)
         contents = f.read()
         modem.delete_file("client.key")
         modem.upload_file("client.key", contents)

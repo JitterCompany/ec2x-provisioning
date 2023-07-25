@@ -304,7 +304,7 @@ class Modem:
                 'usb_mode': usb_mode,
                 'apn': APN,
                 'ecm_mode_roaming': ecm_mode_roaming
-            };
+            }
 
             return self.config
 

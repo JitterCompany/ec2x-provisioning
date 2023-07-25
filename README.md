@@ -10,7 +10,8 @@ This requires the following directories to exist:
 
 Run
 
-```
+```bash
+
 ./provision --help
 
 # for firmware update
@@ -21,3 +22,11 @@ Run
 ```
 
 Run without `--apply` to do a dry-run.
+
+Upload key and certificate:
+
+```bash
+
+./provision --key ./fwdev1.key --cert ./fw1dev1.crt
+
+```
